@@ -21,13 +21,13 @@ const INITIAL_STATE = {
   checkAuthUser: async () => false as boolean,
 };
 
-type IContextType = {
+export type IContextType = {
   user: IUser;
   isLoading: boolean;
   setUser: React.Dispatch<React.SetStateAction<IUser>>;
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-  checkAuthUser: () => Promise<boolean>;
+  checkAuthUser: () => Promise<boolean | undefined>;
 };
 
 
@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuthUser = async () => {
     try {
-      const currentAccount = await getCurrentUser();
+      const currentAccount = await getCurrentUser();    
       if (currentAccount) {
         setUser({
           id: currentAccount.$id,
@@ -63,9 +63,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    const cookieFallback = localStorage.getItem("cookieFallback");
     if (
-      // localStorage.getItem('cookieFallback') === null ||
-      localStorage.getItem('cookieFallback') === '[]' 
+      cookieFallback === "[]" ||
+      cookieFallback === null ||
+      cookieFallback === undefined
     ) {
       navigate("/sign-in");
     }
