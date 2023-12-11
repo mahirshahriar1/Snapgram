@@ -9,30 +9,35 @@ import { Models } from "appwrite";
 import React, { useState, useEffect } from "react";
 
 type PostStatsProps = {
-  post: Models.Document;
+  post?: Models.Document;
   userId: string;
 };
 
 const PostStats = ({ post, userId }: PostStatsProps) => {
-  const likesList = post.likes.map((user: Models.Document) => user.$id);
-
-  const [likes, setLikes] = useState<string[]>(likesList);
+  // console.log(post);
+  // console.log(userId);
+ 
   const [isSaved, setIsSaved] = useState(false);
-
+  console.log(post);
+  const likesList = post?.likes.map((user: Models.Document) => user.$id);
+  const [likes, setLikes] = useState<string[]>(likesList);
+  
   const { mutate: likePost } = useLikePost();
   const { mutate: savePost } = useSavePost();
   const { mutate: deleteSavePost } = useDeleteSavedPost();
 
   const { data: currentUser } = useGetCurrentUser();
-  console.log(currentUser);
+  // console.log(currentUser);
 
   const savedPostRecord = currentUser?.save.find(
-    (record: Models.Document) => record.post.$id === post.$id
+    (record: Models.Document) => record.post?.$id === post?.$id
   );
   useEffect(() =>{
     setIsSaved(savedPostRecord ? true : false);
   },[currentUser])
  
+
+
   const handleLikePost = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
     e.stopPropagation(); // Prevents the click from propagating to the parent element
 
@@ -45,7 +50,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     }
 
     setLikes(newLikes);
-    likePost({ postId: post.$id, likesArray: newLikes });
+    likePost({ postId: post?.$id || '', likesArray: newLikes });
   };
 
   const handleSavePost = (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => {
@@ -56,7 +61,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
       deleteSavePost(savedPostRecord.$id);
     } else {
     
-      savePost({ userId: userId, postId: post.$id });
+      savePost({ userId: userId, postId: post?.$id || '' });
       setIsSaved(true);
     }
   };

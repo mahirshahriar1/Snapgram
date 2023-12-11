@@ -4,8 +4,8 @@ import { Loader } from "lucide-react";
 import { useParams } from "react-router-dom";
 
 const EditPost = () => {
-  const { id } = useParamss();
-  const { data: post, isPending } = useGetPostById(id);
+  const { id } = useParams();
+  const { data: post, isPending } = useGetPostById(id || '');
 
   if (isPending)
     return (
@@ -30,7 +30,7 @@ const EditPost = () => {
           </h2>
         </div>
 
-        <PostForm action="update" post={post}/>
+        <PostForm action="Update" post={post}/>
 
       </div>
 
